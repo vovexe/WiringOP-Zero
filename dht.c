@@ -81,16 +81,16 @@ int read_dht_data(int iValidPacketCounter)
             c = -c;
         }
         float f = c * 1.8f + 32;
-		if (0 != iValidPacketCounter)
+		if (0 != iValidPacketCounter) // First reading is not valid - skipping it
 			printf( "Humidity = %.1f %% Temperature = %.1f *C (%.1f *F)\n", h, c, f );
-		return 0;
+		return 1;
     }else  {
         //printf( "Data not good, skip\n" );
     }
-	return 1;
+	return 0;
 }
   
-int main( void )
+int main( int argc, char *argv[] )
 {
     //printf( "Raspberry Pi DHT11/DHT22 temperature/humidity test\n" );
   
@@ -101,6 +101,7 @@ int main( void )
     while ( 1 )
     {
         iValidPacketCounter += read_dht_data(iValidPacketCounter);
+        if (2 == argc && iValidPacketCounter > 1) break; // Single shot if any command line argument supplied
         delay( 2000 ); /* wait 2 seconds before next read */
     }
   
