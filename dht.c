@@ -14,7 +14,7 @@
   
 int data[5] = { 0, 0, 0, 0, 0 };
   
-void read_dht_data()
+int read_dht_data(int iValidPacketCounter)
 {
     uint8_t laststate    = HIGH;
     uint8_t counter        = 0;
@@ -81,22 +81,26 @@ void read_dht_data()
             c = -c;
         }
         float f = c * 1.8f + 32;
-        printf( "Humidity = %.1f %% Temperature = %.1f *C (%.1f *F)\n", h, c, f );
+		if (0 != iValidPacketCounter)
+			printf( "Humidity = %.1f %% Temperature = %.1f *C (%.1f *F)\n", h, c, f );
+		return 0;
     }else  {
-        printf( "Data not good, skip\n" );
+        //printf( "Data not good, skip\n" );
     }
+	return 1;
 }
   
 int main( void )
 {
-    printf( "Raspberry Pi DHT11/DHT22 temperature/humidity test\n" );
+    //printf( "Raspberry Pi DHT11/DHT22 temperature/humidity test\n" );
   
     if ( wiringPiSetup() == -1 )
         exit( 1 );
   
+	int iValidPacketCounter = 0;
     while ( 1 )
     {
-        read_dht_data();
+        iValidPacketCounter += read_dht_data(iValidPacketCounter);
         delay( 2000 ); /* wait 2 seconds before next read */
     }
   
